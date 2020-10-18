@@ -92,13 +92,27 @@ void drawGrid(int rows, int cols){
 
 int main()
 {
+    RandomVariable rv;
+    initRandomVariable(&rv);
+    printRandomVariable(rv);
+    addRandomVariable(&rv, 1.0f, 0.01f);
+    addRandomVariable(&rv, 2.0f, 0.01f);
+    addRandomVariable(&rv, 3.0f, 0.01f);
+    addRandomVariable(&rv, 4.0f, 0.01f);
+    addRandomVariable(&rv, 5.0f, 0.01f);
+    addRandomVariable(&rv, 6.0f, 0.01f);
+    addRandomVariable(&rv, 7.0f, 0.01f);
+    addRandomVariable(&rv, 8.0f, 0.01f);
+    addRandomVariable(&rv, 9.0f, 0.01f);
+
+    float pr = probabilityCondition(rv,2,GREATER_NEQ);
+    float ex = expectation(rv);
+    printf("Testing probability %f", ex);
+    /*
     int frame_time;
     int frame_start;
-    
     init();
-    
     bool done = false;
-    
     while (!done) {
         
         frame_start = SDL_GetTicks();
@@ -130,7 +144,7 @@ int main()
     endDestroy();
     
     SDL_Quit();
-     
+     */
    
     return 0;
 }
