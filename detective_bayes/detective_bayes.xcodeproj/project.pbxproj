@@ -11,6 +11,8 @@
 		16028AE3253B57EF000B0C57 /* SDL2_image.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 16028AE1253B57EE000B0C57 /* SDL2_image.framework */; };
 		16028AE4253B57EF000B0C57 /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 16028AE2253B57EE000B0C57 /* SDL2.framework */; };
 		167E4B39253BCD610091FCEB /* rv.h in Sources */ = {isa = PBXBuildFile; fileRef = 167E4B38253BCD610091FCEB /* rv.h */; };
+		167E4B3F253CF2AF0091FCEB /* SDL2_mixer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 167E4B3E253CF2AF0091FCEB /* SDL2_mixer.framework */; };
+		167E4B42253CFE920091FCEB /* SDL2_ttf.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 167E4B41253CFE920091FCEB /* SDL2_ttf.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -32,6 +34,9 @@
 		16028AE2253B57EE000B0C57 /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = ../../../../../Library/Frameworks/SDL2.framework; sourceTree = "<group>"; };
 		167E4B2B253B832C0091FCEB /* game.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = game.h; sourceTree = "<group>"; };
 		167E4B38253BCD610091FCEB /* rv.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = rv.h; sourceTree = "<group>"; };
+		167E4B3E253CF2AF0091FCEB /* SDL2_mixer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2_mixer.framework; path = ../../../../../Library/Frameworks/SDL2_mixer.framework; sourceTree = "<group>"; };
+		167E4B41253CFE920091FCEB /* SDL2_ttf.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2_ttf.framework; path = ../../../../../Library/Frameworks/SDL2_ttf.framework; sourceTree = "<group>"; };
+		167E4B49253D28200091FCEB /* Roboto-Black.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Roboto-Black.ttf"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -39,6 +44,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				167E4B42253CFE920091FCEB /* SDL2_ttf.framework in Frameworks */,
+				167E4B3F253CF2AF0091FCEB /* SDL2_mixer.framework in Frameworks */,
 				16028AE3253B57EF000B0C57 /* SDL2_image.framework in Frameworks */,
 				16028AE4253B57EF000B0C57 /* SDL2.framework in Frameworks */,
 			);
@@ -67,6 +74,7 @@
 		16028AD7253B579D000B0C57 /* detective_bayes */ = {
 			isa = PBXGroup;
 			children = (
+				167E4B49253D28200091FCEB /* Roboto-Black.ttf */,
 				16028AD8253B579D000B0C57 /* main.c */,
 				167E4B38253BCD610091FCEB /* rv.h */,
 				167E4B2B253B832C0091FCEB /* game.h */,
@@ -77,6 +85,8 @@
 		16028AE0253B57EE000B0C57 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				167E4B41253CFE920091FCEB /* SDL2_ttf.framework */,
+				167E4B3E253CF2AF0091FCEB /* SDL2_mixer.framework */,
 				16028AE1253B57EE000B0C57 /* SDL2_image.framework */,
 				16028AE2253B57EE000B0C57 /* SDL2.framework */,
 			);

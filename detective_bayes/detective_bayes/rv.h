@@ -14,7 +14,7 @@ typedef struct RandomVariable{
     float X[10];
     float P[10];
     int storage;
-} RandomVariable;
+}RandomVariable;
 
 void initRandomVariable(RandomVariable* rv_pointer){
     rv_pointer->X[0] = 0.0f;

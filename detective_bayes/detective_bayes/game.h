@@ -56,6 +56,7 @@ void inputs( bool* a, struct Controller* xbone){
                 break;
             case SDL_MOUSEBUTTONDOWN:
                 SDL_GetMouseState(&xbone->mouse_x, &xbone->mouse_y);
+                
 
                 break;
             case SDL_MOUSEBUTTONUP:
@@ -67,6 +68,7 @@ void inputs( bool* a, struct Controller* xbone){
         }
     }
 }
+
 void boardInit(){
     for (int i = 0; i < 16; i++){
         for (int j = 0; j < 9; j++){
