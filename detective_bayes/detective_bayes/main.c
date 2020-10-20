@@ -6,7 +6,6 @@
 #include<stdbool.h>
 #include<math.h>
 #include "game.h"
-#include <unistd.h>
 
 //Screen dimensions
 const int WINDOW_WIDTH = 414;
@@ -98,15 +97,37 @@ void drawGrid(int rows, int cols){
     for(int i =0; i< ((rows+1)-4); i++){
         SDL_RenderDrawLine(gRenderer, 0, (i*46), WINDOW_WIDTH, (i*46));
     }
+    
     for(int i =0; i < cols+1; i++){
         //finish the verticle line to make room for menu
         SDL_RenderDrawLine(gRenderer, (i*46), 0, (i*46), (WINDOW_HEIGHT-(4*46)));
     }
+    
 }
-
+//TODO: Need to create function that only destroys texture when it detects a change
+//TODO: Maybe create one giant texture
+void drawPMF(RandomVariable rv, TTF_Font* font){
+    int zeroed_x = WINDOW_WIDTH-(4*46);
+    int zeroed_y = WINDOW_HEIGHT-(4*46);
+    int offset = (WINDOW_HEIGHT - zeroed_y)/11;
+    char buffer[30] = {0};
+    SDL_Color test_c = {1,3,243,SDL_ALPHA_OPAQUE};
+    for(int i = 0; i < rv.storage; i++){
+        sprintf(buffer, "(Value:%.2f,Probability:%.2f)" , rv.X[i] , rv.P[i]);
+        SDL_Surface *surfTemp = TTF_RenderText_Solid(font, buffer, test_c);
+        SDL_Texture *text = SDL_CreateTextureFromSurface(gRenderer, surfTemp);
+        SDL_FreeSurface(surfTemp);
+        surfTemp = NULL;
+        SDL_Rect temp = {zeroed_x, zeroed_y+(i*offset), NULL ,NULL};
+        SDL_QueryTexture(text, NULL, NULL, &temp.w, &temp.h);
+        SDL_RenderCopy(gRenderer, text, NULL, &temp);
+        SDL_DestroyTexture(text);
+    }
+}
+    
 int main()
 {
-    /*
+    
     RandomVariable rv;
     initRandomVariable(&rv);
     printRandomVariable(rv);
@@ -119,21 +140,24 @@ int main()
     addRandomVariable(&rv, 7.0f, 0.01f);
     addRandomVariable(&rv, 8.0f, 0.01f);
     addRandomVariable(&rv, 9.0f, 0.01f);
-    */
+    printf("%d\n",rv.storage);
     
     
     int frame_time;
     int frame_start;
     init();
-    gFont = TTF_OpenFont("detective_bayes/Roboto-Black.ttf", 20);
-    SDL_Color test_c = {255,243,23,SDL_ALPHA_OPAQUE};
-    SDL_Surface *surf = TTF_RenderText_Solid(gFont, "Bitch nigga", test_c);
+    gFont = TTF_OpenFont("detective_bayes/Roboto-Black.ttf", 12);
+    SDL_Color test_c = {1,3,243,SDL_ALPHA_OPAQUE};
+    SDL_Surface *surf = TTF_RenderText_Solid(gFont, "Expectation", test_c);
     SDL_Texture* text = SDL_CreateTextureFromSurface(gRenderer, surf);
     SDL_Rect textRect;
-    textRect.x = textRect.y = 0;
+    textRect.x = 0;
+    textRect.y = WINDOW_HEIGHT - (4*46);
     SDL_FreeSurface(surf);
     
     SDL_QueryTexture(text, NULL, NULL, &textRect.w , &textRect.h);
+    
+    
     bool done = false;
     
     while (!done) {
@@ -155,6 +179,9 @@ int main()
         drawBoard();
         drawMenu();
         SDL_RenderCopy(gRenderer, text, NULL, &textRect);
+        
+        drawPMF(rv, gFont);
+        
         SDL_RenderPresent(gRenderer);
         
         frame_time = SDL_GetTicks() - frame_start;
