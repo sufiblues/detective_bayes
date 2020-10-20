@@ -22,9 +22,12 @@ typedef struct Controller{
 
 typedef struct Game{
     int board[16][9];
+    RandomVariable tiles[16][9];
     int screen_width;
     int screen_height;
     Controller control;
+    int selected_tilex;
+    int selected_tiley;
 }Game;
 
 Game game;
@@ -56,7 +59,6 @@ void inputs( bool* a, struct Controller* xbone){
                 break;
             case SDL_MOUSEBUTTONDOWN:
                 SDL_GetMouseState(&xbone->mouse_x, &xbone->mouse_y);
-                
 
                 break;
             case SDL_MOUSEBUTTONUP:
@@ -82,6 +84,8 @@ void gameInit(int width, int height){
     game.screen_height = height;
 }
 
+
+
 //TODO: Change 46 to a generalized tilesize variable
 SDL_Point whichTile(int x, int y){
     SDL_Point point = {x/46,y/46};
@@ -92,6 +96,8 @@ void updateBoard(){
     if ((game.control.mouse_x > 0) && (game.control.mouse_y > 0)){
         SDL_Point tile = whichTile(game.control.mouse_x, game.control.mouse_y);
         printf("(col:%d,row:%d)\n" , tile.x , tile.y);
+        game.selected_tilex = tile.x;
+        game.selected_tiley = tile.y;
         game.board[tile.y][tile.x] = 1;
     }
 }
