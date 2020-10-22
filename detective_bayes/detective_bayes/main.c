@@ -28,6 +28,17 @@ TTF_Font* gFont = NULL;
 
 SDL_Texture* rvs_pmfs[16][9][10];
 
+void DestroyTextures(){
+    for (int i = 0; i < 16; i++){
+        for (int j = 0; j < 9; j++){
+            for (int k = 0; k<10; k++){
+                SDL_DestroyTexture(rvs_pmfs[i][j][k]);
+                rvs_pmfs[i][j][k] = NULL;
+            }
+        }
+    }
+}
+
 //initializes window,rendrer,and surface
 bool init()
 {
@@ -60,7 +71,7 @@ bool init()
 }
 void drawMenu(){
     SDL_SetRenderDrawColor(gRenderer, 132, 132, 5, SDL_ALPHA_OPAQUE);
-    SDL_Rect menu = {0,(WINDOW_HEIGHT -(4*46)),WINDOW_WIDTH , (4*46)};
+    SDL_Rect menu = {0,(WINDOW_HEIGHT - (4*46)),WINDOW_WIDTH , (4*46)};
     SDL_RenderFillRect(gRenderer, &menu);
 }
 //destroys renderer and window
@@ -101,10 +112,10 @@ void initTextures(){
 
 //TODO: Replace 46 with generic tilesize
 void drawBoard(){
-    SDL_SetRenderDrawColor(gRenderer, 255, 255, 245, SDL_ALPHA_OPAQUE);
+    SDL_SetRenderDrawColor(gRenderer, 255, 30, 245, SDL_ALPHA_OPAQUE);
     for (int i = 0; i < 16-4; i++){
         for (int j = 0; j < (9); j++){
-            if (game.board[i][j] > 0){
+            if (game.tiles[i][j].storage > 1){
                 SDL_Rect temp = {j*46,i*46,46,46};
                 SDL_RenderFillRect(gRenderer, &temp);
             }
@@ -125,6 +136,21 @@ void drawGrid(int rows, int cols){
     }
     
 }
+void updateTexture(){
+    char buffer[30] = {0};
+    TTF_Font *Font = TTF_OpenFont("detective_bayes/Roboto-Black.ttf", 12);
+    SDL_Color color = {1,3,243,SDL_ALPHA_OPAQUE};
+    for(int k = 0; k < game.tiles[game.selected_tiley][game.selected_tilex].storage; k++){
+        sprintf(buffer, "(Value:%.2f,Probability:%.2f)" , game.tiles[game.selected_tiley][game.selected_tilex].X[k] , game.tiles[game.selected_tiley][game.selected_tilex].P[k]);
+        SDL_Surface *surfTemp = TTF_RenderText_Solid(Font, buffer, color);
+        SDL_Texture *text = SDL_CreateTextureFromSurface(gRenderer, surfTemp);
+        SDL_FreeSurface(surfTemp);
+        surfTemp = NULL;
+        rvs_pmfs[game.selected_tiley][game.selected_tilex][k] = text;
+        
+    }
+    
+}
 //TODO: Need to create function that only destroys texture when it detects a change
 //TODO: Maybe create one giant texture
 void drawPMF(){
@@ -137,16 +163,20 @@ void drawPMF(){
         SDL_Rect temp = {zeroed_x, zeroed_y+(i*offset), NULL ,NULL};
         SDL_QueryTexture(rvs_pmfs[game.selected_tiley][game.selected_tilex][i], NULL, NULL, &temp.w, &temp.h);
         SDL_RenderCopy(gRenderer, rvs_pmfs[game.selected_tiley][game.selected_tilex][i], NULL, &temp);
-
-        
     }
+}
 
+//draw button
+void drawButtons(){
+    SDL_SetRenderDrawColor(gRenderer, 57, 255, 8, SDL_ALPHA_OPAQUE);
+    SDL_RenderFillRect(gRenderer, &game.addPMF);
     
 }
     
 int main()
 {
-    
+    gameInit(WINDOW_WIDTH, WINDOW_HEIGHT);
+
     RandomVariable rv;
     initRandomVariable(&rv);
     printRandomVariable(rv);
@@ -167,18 +197,7 @@ int main()
     int frame_start;
     init();
     initTextures();
-    /*
-    gFont = TTF_OpenFont("detective_bayes/Roboto-Black.ttf", 12);
-    SDL_Color test_c = {1,3,243,SDL_ALPHA_OPAQUE};
-    SDL_Surface *surf = TTF_RenderText_Solid(gFont, "Expectation", test_c);
-    SDL_Texture* text = SDL_CreateTextureFromSurface(gRenderer, surf);
-    SDL_Rect textRect;
-    textRect.x = 0;
-    textRect.y = WINDOW_HEIGHT - (4*46);
-    SDL_FreeSurface(surf);
-    SDL_QueryTexture(text, NULL, NULL, &textRect.w , &textRect.h);
-    */
-    
+
     bool done = false;
     
     while (!done) {
@@ -186,24 +205,25 @@ int main()
         frame_start = SDL_GetTicks();
         
         inputs(&done, &game.control);
-        
         updateBoard();
-        
-        //draw background
-        if(game.control.mouse_x>0 && game.control.mouse_y > 0){
-            SDL_Point tile = whichTile(game.control.mouse_x, game.control.mouse_y);
-            printf("Clicked (%d,%d)\n" , game.selected_tiley, game.selected_tilex);
+        if (game.change){
+            updateTexture();
+            game.change = false;
         }
+        
         
         SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
         drawGrid(NO_ROWS, NO_COLS);
         drawBoard();
         drawMenu();
-        
+        drawButtons();
         drawPMF();
         
         SDL_RenderPresent(gRenderer);
         
+        
+        
+        //frame capping
         frame_time = SDL_GetTicks() - frame_start;
         if(FRAME_DELAY>frame_time){
             SDL_Delay(FRAME_DELAY-frame_time);
@@ -211,7 +231,7 @@ int main()
     }
     
     
-    
+    DestroyTextures();
     endDestroy();
     
     SDL_Quit();

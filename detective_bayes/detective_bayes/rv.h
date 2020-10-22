@@ -129,6 +129,7 @@ float conditionalExpectation(RandomVariable rv, float condition, int relation){
     
 }
 
+
 float expectation(RandomVariable rv){
     float total = 0.0f;
     for(int i = 0; i < 10; i++){

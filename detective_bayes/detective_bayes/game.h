@@ -20,6 +20,7 @@ typedef struct Controller{
 
 }Controller;
 
+//TODO: Change selected tile to SDL_Point
 typedef struct Game{
     int board[16][9];
     RandomVariable tiles[16][9];
@@ -28,6 +29,9 @@ typedef struct Game{
     Controller control;
     int selected_tilex;
     int selected_tiley;
+    SDL_Rect addPMF;
+    SDL_Rect subtractPMF;
+    bool change;
 }Game;
 
 Game game;
@@ -50,11 +54,9 @@ void inputs( bool* a, struct Controller* xbone){
             case SDL_KEYUP:
                 switch(event.key.keysym.sym)
                 {
-
                     case SDLK_e:
                         xbone->edit = 0;
                         break;
-
                 }
                 break;
             case SDL_MOUSEBUTTONDOWN:
@@ -82,24 +84,59 @@ void gameInit(int width, int height){
     boardInit();
     game.screen_width = width;
     game.screen_height = height;
+    for (int i = 0; i < 16; i++){
+        for (int j = 0; j < 9; j++){
+            initRandomVariable(&game.tiles[i][j]);
+        }
+    }
+    game.addPMF.x = (game.screen_width-(46*4));
+    game.addPMF.y = (game.screen_height-(46));
+    game.addPMF.w = 46;
+    game.addPMF.h = 46;
+    game.change = false;
 }
 
-
-
+void updateAddProbability(float value, float probability){
+    if (game.tiles[game.selected_tiley][game.selected_tilex].P[0] < probability){
+        printf("Could not add probability\n");
+    }
+}
 //TODO: Change 46 to a generalized tilesize variable
 SDL_Point whichTile(int x, int y){
     SDL_Point point = {x/46,y/46};
     return point;
 }
 
+//button
+bool clickedRect(SDL_Point click , SDL_Rect button){
+    if(button.x <= click.x <= (button.x + button.w) && (button.y <= click.y <=(button.y + button.h))){
+        return true;
+    }
+    return false;
+}
+//check to see if the user clicked the add or minus box
 void updateBoard(){
     if ((game.control.mouse_x > 0) && (game.control.mouse_y > 0)){
         SDL_Point tile = whichTile(game.control.mouse_x, game.control.mouse_y);
         printf("(col:%d,row:%d)\n" , tile.x , tile.y);
-        game.selected_tilex = tile.x;
-        game.selected_tiley = tile.y;
-        game.board[tile.y][tile.x] = 1;
+        //if the player clicks under the gameboard it won't update the selected tile
+        if(game.control.mouse_y <(game.screen_height - (46*4))){
+            game.selected_tilex = tile.x;
+            game.selected_tiley = tile.y;
+        }
+        else{
+            SDL_Point click = {game.control.mouse_x , game.control.mouse_y};
+            if(clickedRect(click, game.addPMF)){
+                addRandomVariable(&game.tiles[game.selected_tiley][game.selected_tilex], 3, .03);
+                game.change = true;
+                
+            }
+            
+        }
+        //game.board[tile.y][tile.x] = 1;
     }
 }
+
+
 
 #endif /* game_h */
