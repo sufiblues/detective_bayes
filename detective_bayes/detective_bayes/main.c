@@ -12,7 +12,7 @@ const int WINDOW_WIDTH = 414;
 const int WINDOW_HEIGHT = 736;
 const int NO_COLS = 9;
 const int NO_ROWS = 16;
-const double FRAME_RATE = 15.0;
+const double FRAME_RATE = 10.0;
 const double FRAME_DELAY = 1000/FRAME_RATE;
 
 
@@ -157,8 +157,7 @@ void drawPMF(){
     int zeroed_x = WINDOW_WIDTH-(4*46);
     int zeroed_y = WINDOW_HEIGHT-(4*46);
     int offset = (WINDOW_HEIGHT - zeroed_y)/11;
-    printf("Selected Tile (row:%d,col:%d)\n", game.selected_tiley, game.selected_tilex);
-    printf("Storage:%d\n", game.tiles[game.selected_tiley][game.selected_tilex].storage);
+    //printf("Storage:%d\n", game.tiles[game.selected_tiley][game.selected_tilex].storage);
     for (int i = 0; i < game.tiles[game.selected_tiley][game.selected_tilex].storage;i++){
         SDL_Rect temp = {zeroed_x, zeroed_y+(i*offset), NULL ,NULL};
         SDL_QueryTexture(rvs_pmfs[game.selected_tiley][game.selected_tilex][i], NULL, NULL, &temp.w, &temp.h);
@@ -170,7 +169,9 @@ void drawPMF(){
 void drawButtons(){
     SDL_SetRenderDrawColor(gRenderer, 57, 255, 8, SDL_ALPHA_OPAQUE);
     SDL_RenderFillRect(gRenderer, &game.addPMF);
-    
+    SDL_SetRenderDrawColor(gRenderer, 255, 7, 58, SDL_ALPHA_OPAQUE);
+    SDL_RenderFillRect(gRenderer, &game.subtractPMF);
+
 }
     
 int main()

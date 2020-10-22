@@ -93,7 +93,12 @@ void gameInit(int width, int height){
     game.addPMF.y = (game.screen_height-(46));
     game.addPMF.w = 46;
     game.addPMF.h = 46;
+    game.subtractPMF.x = (game.screen_width - (46*3));
+    game.subtractPMF.y = game.screen_height - 46;
+    game.subtractPMF.w = 46;
+    game.subtractPMF.h = 46;
     game.change = false;
+    
 }
 
 void updateAddProbability(float value, float probability){
@@ -109,7 +114,10 @@ SDL_Point whichTile(int x, int y){
 
 //button
 bool clickedRect(SDL_Point click , SDL_Rect button){
-    if(button.x <= click.x <= (button.x + button.w) && (button.y <= click.y <=(button.y + button.h))){
+    if((button.x <= click.x) &&
+        (click.x <= (button.x + button.w)) &&
+       (button.y <= click.y) &&
+        (click.y<=(button.y + button.h))){
         return true;
     }
     return false;
@@ -118,7 +126,7 @@ bool clickedRect(SDL_Point click , SDL_Rect button){
 void updateBoard(){
     if ((game.control.mouse_x > 0) && (game.control.mouse_y > 0)){
         SDL_Point tile = whichTile(game.control.mouse_x, game.control.mouse_y);
-        printf("(col:%d,row:%d)\n" , tile.x , tile.y);
+        //printf("(col:%d,row:%d)\n" , tile.x , tile.y);
         //if the player clicks under the gameboard it won't update the selected tile
         if(game.control.mouse_y <(game.screen_height - (46*4))){
             game.selected_tilex = tile.x;
@@ -127,11 +135,15 @@ void updateBoard(){
         else{
             SDL_Point click = {game.control.mouse_x , game.control.mouse_y};
             if(clickedRect(click, game.addPMF)){
+                printf("Clicked in add button\n");
                 addRandomVariable(&game.tiles[game.selected_tiley][game.selected_tilex], 3, .03);
                 game.change = true;
-                
             }
-            
+            else if(clickedRect(click, game.subtractPMF)){
+                printf("Subs\n");
+                subtractRandomVariable(&game.tiles[game.selected_tiley][game.selected_tilex]);
+                game.change = true;
+            }
         }
         //game.board[tile.y][tile.x] = 1;
     }

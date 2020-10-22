@@ -44,6 +44,20 @@ void addRandomVariable(RandomVariable* rv_pointer, float value, float probabilit
     }
 }
 
+void subtractRandomVariable(RandomVariable* rv_pointer){
+    if(rv_pointer->storage == 1){
+        printf("Cant subtract the 0 case\n");
+    }
+    else{
+        int index = rv_pointer->storage-1;
+        rv_pointer->P[0] += rv_pointer->P[index];
+        rv_pointer->X[index] = 0;
+        rv_pointer->P[index] = 0;
+        rv_pointer->storage = index;
+        printf("storage inside sub RV %d \n", index);
+    }
+}
+
 void printRandomVariable(RandomVariable rv){
     for (int i = 0; i < rv.storage; i++){
         printf("(Value:%f, Probability:%f)\n",rv.X[i] , rv.P[i]);
