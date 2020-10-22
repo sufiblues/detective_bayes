@@ -54,7 +54,7 @@ void subtractRandomVariable(RandomVariable* rv_pointer){
         rv_pointer->X[index] = 0;
         rv_pointer->P[index] = 0;
         rv_pointer->storage = index;
-        printf("storage inside sub RV %d \n", index);
+        printf("Storage inside sub RV %d \n", index);
     }
 }
 

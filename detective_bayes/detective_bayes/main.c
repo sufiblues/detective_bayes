@@ -12,7 +12,7 @@ const int WINDOW_WIDTH = 414;
 const int WINDOW_HEIGHT = 736;
 const int NO_COLS = 9;
 const int NO_ROWS = 16;
-const double FRAME_RATE = 10.0;
+const double FRAME_RATE = 60.0;
 const double FRAME_DELAY = 1000/FRAME_RATE;
 
 
@@ -190,7 +190,6 @@ int main()
     addRandomVariable(&rv, 7.0f, 0.01f);
     addRandomVariable(&rv, 8.0f, 0.01f);
     addRandomVariable(&rv, 9.0f, 0.01f);
-    printf("%d\n",rv.storage);
     
     game.tiles[0][1] = rv;
     
@@ -200,7 +199,6 @@ int main()
     initTextures();
 
     bool done = false;
-    
     while (!done) {
         
         frame_start = SDL_GetTicks();

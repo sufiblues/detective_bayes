@@ -17,6 +17,7 @@ typedef struct Controller{
     int edit;
     int mouse_x;
     int mouse_y;
+    int click_frames_held;
 
 }Controller;
 
@@ -61,16 +62,22 @@ void inputs( bool* a, struct Controller* xbone){
                 break;
             case SDL_MOUSEBUTTONDOWN:
                 SDL_GetMouseState(&xbone->mouse_x, &xbone->mouse_y);
-
+                xbone->click_frames_held = 1;
                 break;
             case SDL_MOUSEBUTTONUP:
                 xbone->mouse_x = -1;
                 xbone->mouse_y = -1;
+                xbone->click_frames_held = 0;
                 break;
             case SDL_QUIT:
                 *a = true;
         }
     }
+    
+    if(xbone->click_frames_held >= 1){
+        xbone->click_frames_held++;
+    }
+     
 }
 
 void boardInit(){
@@ -98,6 +105,7 @@ void gameInit(int width, int height){
     game.subtractPMF.w = 46;
     game.subtractPMF.h = 46;
     game.change = false;
+    game.control.click_frames_held = 0;
     
 }
 
@@ -123,8 +131,9 @@ bool clickedRect(SDL_Point click , SDL_Rect button){
     return false;
 }
 //check to see if the user clicked the add or minus box
+//on the first frame of a click but stops repeat presses
 void updateBoard(){
-    if ((game.control.mouse_x > 0) && (game.control.mouse_y > 0)){
+    if ((game.control.mouse_x > 0) && (game.control.mouse_y > 0) && (game.control.click_frames_held <= 2)){
         SDL_Point tile = whichTile(game.control.mouse_x, game.control.mouse_y);
         //printf("(col:%d,row:%d)\n" , tile.x , tile.y);
         //if the player clicks under the gameboard it won't update the selected tile
@@ -135,12 +144,10 @@ void updateBoard(){
         else{
             SDL_Point click = {game.control.mouse_x , game.control.mouse_y};
             if(clickedRect(click, game.addPMF)){
-                printf("Clicked in add button\n");
                 addRandomVariable(&game.tiles[game.selected_tiley][game.selected_tilex], 3, .03);
                 game.change = true;
             }
             else if(clickedRect(click, game.subtractPMF)){
-                printf("Subs\n");
                 subtractRandomVariable(&game.tiles[game.selected_tiley][game.selected_tilex]);
                 game.change = true;
             }
