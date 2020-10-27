@@ -21,6 +21,8 @@ typedef struct Controller{
 
 }Controller;
 
+char* test;
+
 //TODO: Change selected tile to SDL_Point
 typedef struct Game{
     int board[16][9];
@@ -33,23 +35,38 @@ typedef struct Game{
     SDL_Rect addPMF;
     SDL_Rect subtractPMF;
     bool change;
+    SDL_Rect number_enter;
 }Game;
 
 Game game;
 
 
 //need to handle input in an intuitive way
-void inputs( bool* a, struct Controller* xbone){
+void inputs( bool* a, struct Controller* xbone, char test[32], int* tsize){
     SDL_Event event;
-    
     while (SDL_PollEvent(&event)){
         switch (event.type) {
+            case SDL_QUIT:
+                *a = true;
             case SDL_KEYDOWN:
-                switch(event.key.keysym.sym)
+                //Handle backspace
+                if( event.key.keysym.sym == SDLK_BACKSPACE && tsize > 0 )
                 {
-                    case SDLK_e:
-                        xbone->edit = 1;
-                        break;
+                    //lop off character
+                    printf("Backspace\n");
+                    //inputText.pop_back();
+                }
+                //Handle copy
+                else if( event.key.keysym.sym == SDLK_c && SDL_GetModState() & KMOD_CTRL )
+                {
+                    //figure out cliboard cut
+                    //SDL_SetClipboardText( inputText.c_str() );
+                    
+                }
+                //Handle paste
+                else if( event.key.keysym.sym == SDLK_v && SDL_GetModState() & KMOD_CTRL )
+                {
+                    test = SDL_GetClipboardText();
                 }
                 break;
             case SDL_KEYUP:
@@ -69,10 +86,14 @@ void inputs( bool* a, struct Controller* xbone){
                 xbone->mouse_y = -1;
                 xbone->click_frames_held = 0;
                 break;
-            case SDL_QUIT:
-                *a = true;
+            case SDL_TEXTINPUT:
+                printf("Text input: %s\n" , event.text.text);
+                test[0] = event.text.text[0];
+                break;
+            
         }
     }
+    
     
     if(xbone->click_frames_held >= 1){
         xbone->click_frames_held++;
@@ -106,6 +127,10 @@ void gameInit(int width, int height){
     game.subtractPMF.h = 46;
     game.change = false;
     game.control.click_frames_held = 0;
+    game.number_enter.x = game.screen_width - (46*6);
+    game.number_enter.y = game.screen_height - (46*2);
+    game.number_enter.h = (46);
+    game.number_enter.w = (46*3);
     
 }
 
@@ -154,6 +179,10 @@ void updateBoard(){
         }
         //game.board[tile.y][tile.x] = 1;
     }
+}
+
+void changeTextBox(){
+    
 }
 
 

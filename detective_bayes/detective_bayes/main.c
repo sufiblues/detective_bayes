@@ -12,7 +12,7 @@ const int WINDOW_WIDTH = 414;
 const int WINDOW_HEIGHT = 736;
 const int NO_COLS = 9;
 const int NO_ROWS = 16;
-const double FRAME_RATE = 60.0;
+const double FRAME_RATE = 10.0;
 const double FRAME_DELAY = 1000/FRAME_RATE;
 
 
@@ -38,6 +38,8 @@ void DestroyTextures(){
         }
     }
 }
+
+
 
 //initializes window,rendrer,and surface
 bool init()
@@ -119,6 +121,7 @@ void drawBoard(){
                 SDL_Rect temp = {j*46,i*46,46,46};
                 SDL_RenderFillRect(gRenderer, &temp);
             }
+            
         }
     }
 }
@@ -136,6 +139,7 @@ void drawGrid(int rows, int cols){
     }
     
 }
+//TODO: Fix Memory leak when opening font file;
 void updateTexture(){
     char buffer[30] = {0};
     TTF_Font *Font = TTF_OpenFont("detective_bayes/Roboto-Black.ttf", 12);
@@ -147,8 +151,8 @@ void updateTexture(){
         SDL_FreeSurface(surfTemp);
         surfTemp = NULL;
         rvs_pmfs[game.selected_tiley][game.selected_tilex][k] = text;
-        
     }
+    
     
 }
 //TODO: Need to create function that only destroys texture when it detects a change
@@ -165,6 +169,17 @@ void drawPMF(){
     }
 }
 
+void drawTextBox(char* string, SDL_Rect* label){
+    SDL_Color color = {1,234,243,SDL_ALPHA_OPAQUE};
+    SDL_Surface* tempSurf = TTF_RenderText_Solid(gFont, string, color);
+    SDL_Texture* text = SDL_CreateTextureFromSurface(gRenderer, tempSurf);
+    SDL_FreeSurface(tempSurf);
+    SDL_QueryTexture(text, NULL, NULL, &label->w, &label->h);
+    SDL_RenderCopy(gRenderer, text, NULL, label);
+    SDL_DestroyTexture(text);
+
+}
+
 //draw button
 void drawButtons(){
     SDL_SetRenderDrawColor(gRenderer, 57, 255, 8, SDL_ALPHA_OPAQUE);
@@ -173,37 +188,33 @@ void drawButtons(){
     SDL_RenderFillRect(gRenderer, &game.subtractPMF);
 
 }
+
+void initFont(){
+    gFont = TTF_OpenFont("detective_bayes/Roboto-Black.ttf", 12);
+}
     
 int main()
 {
+    init();
+    initTextures();
+    initFont();
     gameInit(WINDOW_WIDTH, WINDOW_HEIGHT);
-
-    RandomVariable rv;
-    initRandomVariable(&rv);
-    printRandomVariable(rv);
-    addRandomVariable(&rv, 1.0f, 0.01f);
-    addRandomVariable(&rv, 2.0f, 0.01f);
-    addRandomVariable(&rv, 3.0f, 0.01f);
-    addRandomVariable(&rv, 4.0f, 0.01f);
-    addRandomVariable(&rv, 5.0f, 0.01f);
-    addRandomVariable(&rv, 6.0f, 0.01f);
-    addRandomVariable(&rv, 7.0f, 0.01f);
-    addRandomVariable(&rv, 8.0f, 0.01f);
-    addRandomVariable(&rv, 9.0f, 0.01f);
     
-    game.tiles[0][1] = rv;
+    
+    char testinput[32] = {0};
+    int text_size = 1;
     
     int frame_time;
     int frame_start;
-    init();
-    initTextures();
+    
 
     bool done = false;
     while (!done) {
         
         frame_start = SDL_GetTicks();
         
-        inputs(&done, &game.control);
+        inputs(&done, &game.control,testinput,&text_size);
+        printf("Print changed string %s\n",testinput);
         updateBoard();
         if (game.change){
             updateTexture();
@@ -217,10 +228,9 @@ int main()
         drawMenu();
         drawButtons();
         drawPMF();
-        
+        drawTextBox(testinput, &game.number_enter);
+        SDL_RenderDrawRect(gRenderer, &game.number_enter);
         SDL_RenderPresent(gRenderer);
-        
-        
         
         //frame capping
         frame_time = SDL_GetTicks() - frame_start;
@@ -229,7 +239,7 @@ int main()
         }
     }
     
-    
+    SDL_StopTextInput();
     DestroyTextures();
     endDestroy();
     
