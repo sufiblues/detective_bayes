@@ -12,7 +12,7 @@ const int WINDOW_WIDTH = 414;
 const int WINDOW_HEIGHT = 736;
 const int NO_COLS = 9;
 const int NO_ROWS = 16;
-const double FRAME_RATE = 10.0;
+const double FRAME_RATE = 8.0;
 const double FRAME_DELAY = 1000/FRAME_RATE;
 
 
@@ -141,7 +141,7 @@ void drawGrid(int rows, int cols){
 }
 //TODO: Fix Memory leak when opening font file;
 void updateTexture(){
-    char buffer[30] = {0};
+    char buffer[50] = {0};
     TTF_Font *Font = TTF_OpenFont("detective_bayes/Roboto-Black.ttf", 12);
     SDL_Color color = {1,3,243,SDL_ALPHA_OPAQUE};
     for(int k = 0; k < game.tiles[game.selected_tiley][game.selected_tilex].storage; k++){
@@ -192,6 +192,24 @@ void drawButtons(){
 void initFont(){
     gFont = TTF_OpenFont("detective_bayes/Roboto-Black.ttf", 12);
 }
+
+void drawExpectation(){
+    float exp = expectation(game.tiles[game.selected_tiley][game.selected_tilex]);
+    char buff[32] = {0};
+    sprintf(buff, "Expectation: %.2f" , exp);
+    drawTextBox(buff, &game.exp);
+}
+
+void drawConditionalExpecation(int cond){
+    float exp = conditionalExpectation(game.tiles[game.selected_tiley][game.selected_tilex], cond, GREATER_EQ);
+    
+    char buff[80] = {0};
+    sprintf(buff, "Conditional Expectation >=: %.2f" , exp);
+    drawTextBox(buff, &game.cond_exp);
+    
+}
+
+
     
 int main()
 {
@@ -200,9 +218,7 @@ int main()
     initFont();
     gameInit(WINDOW_WIDTH, WINDOW_HEIGHT);
     
-    
-    char testinput[32] = {0};
-    int text_size = 1;
+
     
     int frame_time;
     int frame_start;
@@ -213,9 +229,11 @@ int main()
         
         frame_start = SDL_GetTicks();
         
-        inputs(&done, &game.control,testinput,&text_size);
-        printf("Print changed string %s\n",testinput);
+        inputs(&done, &game.control);
+        printf("Print changed string %s,%d\n",game.input_fields[game.input_field_selected],game.input_fields_size[game.input_field_selected]);
+        
         updateBoard();
+        
         if (game.change){
             updateTexture();
             game.change = false;
@@ -228,8 +246,14 @@ int main()
         drawMenu();
         drawButtons();
         drawPMF();
-        drawTextBox(testinput, &game.number_enter);
-        SDL_RenderDrawRect(gRenderer, &game.number_enter);
+        //drawExpectation();
+        
+        //Draw value boxes players can click and change values
+        drawTextBox(game.input_fields[0], &game.cond);
+        drawTextBox(game.input_fields[1], &game.val);
+        drawTextBox(game.input_fields[2], &game.prob);
+        
+        SDL_RenderDrawRect(gRenderer, &game.cond);
         SDL_RenderPresent(gRenderer);
         
         //frame capping
@@ -239,7 +263,6 @@ int main()
         }
     }
     
-    SDL_StopTextInput();
     DestroyTextures();
     endDestroy();
     

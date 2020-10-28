@@ -35,14 +35,24 @@ typedef struct Game{
     SDL_Rect addPMF;
     SDL_Rect subtractPMF;
     bool change;
-    SDL_Rect number_enter;
+    
+    SDL_Rect exp;
+    SDL_Rect cond_exp;
+    
+    SDL_Rect cond;
+    SDL_Rect val;
+    SDL_Rect prob;
+    
+    char input_fields[4][6];
+    int input_fields_size[4];
+    int input_field_selected;
 }Game;
 
 Game game;
 
 
 //need to handle input in an intuitive way
-void inputs( bool* a, struct Controller* xbone, char test[32], int* tsize){
+void inputs( bool* a, struct Controller* xbone){
     SDL_Event event;
     while (SDL_PollEvent(&event)){
         switch (event.type) {
@@ -50,11 +60,15 @@ void inputs( bool* a, struct Controller* xbone, char test[32], int* tsize){
                 *a = true;
             case SDL_KEYDOWN:
                 //Handle backspace
-                if( event.key.keysym.sym == SDLK_BACKSPACE && tsize > 0 )
+                if( event.key.keysym.sym == SDLK_BACKSPACE && game.input_fields_size[game.input_field_selected] >= 0 )
                 {
                     //lop off character
-                    printf("Backspace\n");
-                    //inputText.pop_back();
+                    if(game.input_fields_size[game.input_field_selected] != 0){
+                        printf("Backspace\n");
+                        game.input_fields_size[game.input_field_selected]-=1;
+                    }
+                    game.input_fields[game.input_field_selected][game.input_fields_size[game.input_field_selected]] = 0;
+                    
                 }
                 //Handle copy
                 else if( event.key.keysym.sym == SDLK_c && SDL_GetModState() & KMOD_CTRL )
@@ -87,18 +101,20 @@ void inputs( bool* a, struct Controller* xbone, char test[32], int* tsize){
                 xbone->click_frames_held = 0;
                 break;
             case SDL_TEXTINPUT:
-                printf("Text input: %s\n" , event.text.text);
-                test[0] = event.text.text[0];
+                if (game.input_fields_size[game.input_field_selected] >= 4){
+                    printf("Too many character in input\n");
+                }
+                else{
+                    game.input_fields[game.input_field_selected][game.input_fields_size[game.input_field_selected]] = event.text.text[0];
+                    (game.input_fields_size[game.input_field_selected])++;
+                    printf("tsize%d",game.input_fields_size[game.input_field_selected]);
+                }
                 break;
-            
         }
     }
-    
-    
     if(xbone->click_frames_held >= 1){
         xbone->click_frames_held++;
     }
-     
 }
 
 void boardInit(){
@@ -121,17 +137,33 @@ void gameInit(int width, int height){
     game.addPMF.y = (game.screen_height-(46));
     game.addPMF.w = 46;
     game.addPMF.h = 46;
+    
+    game.val.x = (game.screen_width - (46*2));
+    game.val.y = (game.screen_height - (46));
+    game.val.w = 46;
+    game.val.h = 46;
+    
+    game.prob.x = (game.screen_width - (46));
+    game.prob.y = (game.screen_height - (46));
+    game.prob.w = 46;
+    game.prob.h = 46;
+
     game.subtractPMF.x = (game.screen_width - (46*3));
     game.subtractPMF.y = game.screen_height - 46;
     game.subtractPMF.w = 46;
     game.subtractPMF.h = 46;
     game.change = false;
     game.control.click_frames_held = 0;
-    game.number_enter.x = game.screen_width - (46*6);
-    game.number_enter.y = game.screen_height - (46*2);
-    game.number_enter.h = (46);
-    game.number_enter.w = (46*3);
-    
+    game.cond.x = game.screen_width - (46*6);
+    game.cond.y = game.screen_height - (46*2);
+    game.cond.h = (46);
+    game.cond.w = (46*3);
+    game.exp.x = 0;
+    game.exp.y = game.screen_height - (46*4);
+    game.cond_exp.x = 0;
+    game.cond_exp.y = game.screen_height - (46*3);
+    game.input_fields_size[3] = 0;
+        
 }
 
 void updateAddProbability(float value, float probability){
@@ -169,22 +201,28 @@ void updateBoard(){
         else{
             SDL_Point click = {game.control.mouse_x , game.control.mouse_y};
             if(clickedRect(click, game.addPMF)){
-                addRandomVariable(&game.tiles[game.selected_tiley][game.selected_tilex], 3, .03);
+                addRandomVariable(&game.tiles[game.selected_tiley][game.selected_tilex], atof(game.input_fields[1]), atof(game.input_fields[2]));
                 game.change = true;
             }
             else if(clickedRect(click, game.subtractPMF)){
                 subtractRandomVariable(&game.tiles[game.selected_tiley][game.selected_tilex]);
                 game.change = true;
             }
+            else if(clickedRect(click, game.cond)){
+                printf("Cond\n");
+                game.input_field_selected = 0;
+            }
+            else if(clickedRect(click, game.val)){
+                printf("val\n");
+                game.input_field_selected = 1;
+            }
+            else if(clickedRect(click, game.prob)){
+                printf("prob\n");
+                game.input_field_selected = 2;
+            }
         }
         //game.board[tile.y][tile.x] = 1;
     }
 }
-
-void changeTextBox(){
-    
-}
-
-
 
 #endif /* game_h */
