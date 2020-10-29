@@ -186,6 +186,16 @@ void drawButtons(){
     SDL_RenderFillRect(gRenderer, &game.addPMF);
     SDL_SetRenderDrawColor(gRenderer, 255, 7, 58, SDL_ALPHA_OPAQUE);
     SDL_RenderFillRect(gRenderer, &game.subtractPMF);
+    SDL_SetRenderDrawColor(gRenderer, 27, 55, 46, SDL_ALPHA_OPAQUE);
+    SDL_RenderFillRect(gRenderer, &game.greate);
+    SDL_SetRenderDrawColor(gRenderer, 115, 215, 224, SDL_ALPHA_OPAQUE);
+    SDL_RenderFillRect(gRenderer, &game.greatne);
+    SDL_SetRenderDrawColor(gRenderer, 173, 198, 71, SDL_ALPHA_OPAQUE);
+    SDL_RenderFillRect(gRenderer, &game.lesse);
+    SDL_SetRenderDrawColor(gRenderer, 115, 126, 4, SDL_ALPHA_OPAQUE);
+    SDL_RenderFillRect(gRenderer, &game.lessne);
+    
+    
 
 }
 
@@ -201,10 +211,24 @@ void drawExpectation(){
 }
 
 void drawConditionalExpecation(int cond){
-    float exp = conditionalExpectation(game.tiles[game.selected_tiley][game.selected_tilex], cond, GREATER_EQ);
-    
+    float exp = conditionalExpectation(game.tiles[game.selected_tiley][game.selected_tilex], cond, game.relation);
     char buff[80] = {0};
-    sprintf(buff, "Conditional Expectation >=: %.2f" , exp);
+    switch (game.relation) {
+        case GREATER_EQ:
+            sprintf(buff, "Conditional Expectation >=: %.2f" , exp);
+            break;
+        case GREATER_NEQ:
+            sprintf(buff, "Conditional Expectation >: %.2f" , exp);
+            break;
+        case LESS_EQ:
+            sprintf(buff, "Conditional Expectation <: %.2f" , exp);
+            break;
+        case LESS_NEQ:
+            sprintf(buff, "Conditional Expectation <=: %.2f" , exp);
+            break;
+            
+       
+    }
     drawTextBox(buff, &game.cond_exp);
     
 }
@@ -230,7 +254,6 @@ int main()
         frame_start = SDL_GetTicks();
         
         inputs(&done, &game.control);
-        printf("Print changed string %s,%d\n",game.input_fields[game.input_field_selected],game.input_fields_size[game.input_field_selected]);
         
         updateBoard();
         
@@ -246,7 +269,9 @@ int main()
         drawMenu();
         drawButtons();
         drawPMF();
-        //drawExpectation();
+        
+        drawExpectation();
+        drawConditionalExpecation(atof(game.input_fields[0]));
         
         //Draw value boxes players can click and change values
         drawTextBox(game.input_fields[0], &game.cond);

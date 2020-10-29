@@ -39,6 +39,11 @@ typedef struct Game{
     SDL_Rect exp;
     SDL_Rect cond_exp;
     
+    SDL_Rect greate;
+    SDL_Rect greatne;
+    SDL_Rect lesse;
+    SDL_Rect lessne;
+    
     SDL_Rect cond;
     SDL_Rect val;
     SDL_Rect prob;
@@ -46,12 +51,15 @@ typedef struct Game{
     char input_fields[4][6];
     int input_fields_size[4];
     int input_field_selected;
+    
+    int relation;
 }Game;
 
 Game game;
 
 
 //need to handle input in an intuitive way
+//TODO: Check input is only numerical
 void inputs( bool* a, struct Controller* xbone){
     SDL_Event event;
     while (SDL_PollEvent(&event)){
@@ -147,22 +155,48 @@ void gameInit(int width, int height){
     game.prob.y = (game.screen_height - (46));
     game.prob.w = 46;
     game.prob.h = 46;
-
+    
     game.subtractPMF.x = (game.screen_width - (46*3));
     game.subtractPMF.y = game.screen_height - 46;
     game.subtractPMF.w = 46;
     game.subtractPMF.h = 46;
+    
     game.change = false;
+    
     game.control.click_frames_held = 0;
-    game.cond.x = game.screen_width - (46*6);
-    game.cond.y = game.screen_height - (46*2);
-    game.cond.h = (46);
+    
+    game.cond.x = 0;
+    game.cond.y = game.screen_height - (46*(2.5));
+    game.cond.h = (46/2);
     game.cond.w = (46*3);
+    
+//    TODO: This can be done in a for loop, create an array for these rects
+    game.greate.x = 0;
+    game.greatne.x = 46;
+    game.lesse.x = (46*2);
+    game.lessne.x = (46*3);
+    game.greate.y = (game.screen_height - (46*2));
+    game.greatne.y = (game.screen_height - (46*2));
+    game.lesse.y = (game.screen_height - (46*2));
+    game.lessne.y = (game.screen_height - (46*2));
+    game.greate.w = 46;
+    game.greatne.w = 46;
+    game.lesse.w = 46;
+    game.lessne.w = 46;
+    game.greate.h = 46;
+    game.greatne.h = 46;
+    game.lesse.h = 46;
+    game.lessne.h = 46;
+
     game.exp.x = 0;
     game.exp.y = game.screen_height - (46*4);
+    
     game.cond_exp.x = 0;
     game.cond_exp.y = game.screen_height - (46*3);
+    
     game.input_fields_size[3] = 0;
+    
+    
         
 }
 
@@ -219,6 +253,23 @@ void updateBoard(){
             else if(clickedRect(click, game.prob)){
                 printf("prob\n");
                 game.input_field_selected = 2;
+            }
+            else if(clickedRect(click, game.greate))
+            {
+                printf("Clicked > relation\n");
+                game.relation = GREATER_EQ;
+            }
+            else if (clickedRect(click, game.greatne)){
+                printf("Clicked >= relation\n");
+                game.relation = GREATER_NEQ;
+            }
+            else if (clickedRect(click, game.lesse)){
+                printf("Clicked < relation\n");
+                game.relation = LESS_EQ;
+            }
+            else if (clickedRect(click, game.lessne)){
+                printf("Clicked <= relation\n");
+                game.relation = LESS_NEQ;
             }
         }
         //game.board[tile.y][tile.x] = 1;
