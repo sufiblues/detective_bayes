@@ -194,9 +194,6 @@ void drawButtons(){
     SDL_RenderFillRect(gRenderer, &game.lesse);
     SDL_SetRenderDrawColor(gRenderer, 115, 126, 4, SDL_ALPHA_OPAQUE);
     SDL_RenderFillRect(gRenderer, &game.lessne);
-    
-    
-
 }
 
 void initFont(){
