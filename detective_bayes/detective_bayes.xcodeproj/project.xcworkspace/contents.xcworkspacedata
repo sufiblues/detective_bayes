@@ -2,9 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:/Users/alihamdani/Developer/detective_bayes/detective_bayes/detective_bayes/RobotoCondensed-Light.ttf">
-   </FileRef>
-   <FileRef
       location = "self:">
    </FileRef>
 </Workspace>
